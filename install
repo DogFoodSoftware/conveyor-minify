@@ -1,0 +1,86 @@
+#!/bin/bash
+
+set -e
+
+MINIFY_GITHUB_REF="mrclay/minify"
+MINIFY_REV="db7fe244932ea77cf1438965693672ea12b33da8"
+MINIFY_SHA256="1a1567vpbjb8q71pxsr4kpnw1qvi9p7i61pky8mp4m27z4hh6h4r"
+
+CONVEYOR_PLAYGROUND="$HOME/playground"
+CONVEYOR_DATA="$HOME/data"
+GITHUB_REF="DogFoodSoftware/conveyor-minify"
+
+function usage() {
+
+    echo "Installs minify for a Conveyor environment. May also work"
+
+    echo "with standard Ubuntu environments with Nginx installed when"
+    echo "run as 'root'."
+    echo
+    echo "install [-p <dir>] [-m <git rev>]"
+    echo
+    echo "Options:"
+    echo
+    echo "--minify-rev|-m <git rev>"
+    echo "  Overrides default minify version to checkout."
+    echo
+    echo "--playground|-p <dir>"
+    echo "  Specifies the location of playground."
+    echo
+}
+
+TMP=`getopt --name=$0 -a --longoptions=minify-rev,playground -o m,p -- $@`
+eval set -- $TMP
+
+until [ $1 == -- ]; do
+    case "$1" in
+	-m|--minify-rev)
+	    MINIFY_REV="$2"
+	    shift;;
+	-p|--playground)
+	    CONVEYOR_PLAYGROUND="$2"
+	    shift;;
+    esac
+    shift
+done
+shift
+
+# In case this is NOT a conveyor enviorment, we need to create some
+# dirs for this stuff to live in.
+for i in "$CONVEYOR_PLAYGROUND" \
+         "$CONVYEOR_DATA/apps"; do
+    if [ ! -d "$i" ]; then
+	mkdir -p "$i"
+    fi
+done
+
+# Now grab the actual minify app
+cd "$CONVEYOR_DATA/apps/"
+mkdir DogFoodSoftware
+cd DogFoodSoftware
+git clone -o $MINIFY_REV --depth 1 https://github.com/${MINIFY_GITHUB_REF}.git $MINIFY_GITHUB_REF minify
+
+MINIFY_APP_HOME="${CONVEYOR_DATA}/apps/${MINIFY_GITHUB_REF}"
+
+cd "$CONVEYOR_PLAYGROUND"
+# We checkout via HTTPS in case the 'ssh-agent' isn't available when
+# the script is run; such as when the script is run with an alternate
+# user using 'sudo'.
+git clone -b $CONVEYOR_VER --depth 1 https://github.com/${GITHUB_REF}.git $GITHUB_REF
+# But then swtich to SSH for easy updates for those with authorized keys.
+cd "$GITHUB_REF"
+git remote set-url origin git@github.com:${GITHUB_REF}.git
+
+PROJECT_HOME="${CONVEYOR_PLAYGROUND}/${GITHUB_REF}"
+
+for i in `ls ${PROJECT_HOME}/conf/service-*.nginx.conf`; do
+    ln -s "$i" /etc/nginx/services
+done
+
+for i in `ls "${PROJECT_HOME}/src"`; do
+    chmod u+w "${MINIFY_APP_HOME}/min/$i"
+    cp "${PROJECT_HOME}/src/$i" "${MINIFY_APP_HOME}/min"
+    chmod u-w "${MINIFY_APP_HOME}/min/$i"
+done
+
+mkdir -p ${MINIFY_APP_HOME}/cache;
