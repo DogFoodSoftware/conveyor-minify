@@ -15,7 +15,7 @@ else {
             $host_bits[count($host_bits) -1];
 }
 
-$minify_config_file = "/home/user/data/conf/html/$domain.minify.php";
+$minify_config_file = "/home/vagrant/data/conf/html/$domain.minify.php";
 #error_log("including: $minify_config_file");
 $minify_config = null;
 if (file_exists($minify_config_file)) {
