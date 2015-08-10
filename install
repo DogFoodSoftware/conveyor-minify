@@ -76,7 +76,15 @@ cd "$GITHUB_REF"
 git remote set-url origin git@github.com:${GITHUB_REF}.git
 
 for i in `ls ${PROJECT_HOME}/conf/service-*.nginx.conf`; do
-    ln -s "$i" /etc/nginx/services
+    if [ -L /etc/nginx/services/`basename $i` ]; then
+        rm /etc/nginx/services/`basename $i`
+    elif [ -f /etc/nginx/services/`basename $i` ]; then
+        echo "Found probable manual update of '/etc/nginx/services/`basename $i`'; leaving in place." >&2
+        echo "Consider removing and running:" >&2
+        echo -e "\tln -s "$i" /etc/nginx/services" >&2
+    else
+        ln -s "$i" /etc/nginx/services
+    fi
 done
 
 for i in `ls "${PROJECT_HOME}/src"`; do
