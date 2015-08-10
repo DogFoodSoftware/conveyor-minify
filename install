@@ -60,7 +60,7 @@ if [ ! -d DogFoodSoftware ]; then
     mkdir DogFoodSoftware
 fi
 cd DogFoodSoftware
-git clone -o $MINIFY_REV --depth 1 https://github.com/${MINIFY_GITHUB_REF}.git $MINIFY_GITHUB_REF minify
+git clone -o $MINIFY_REV --depth 1 https://github.com/${MINIFY_GITHUB_REF}.git minify
 
 MINIFY_APP_HOME="${CONVEYOR_DATA}/apps/${MINIFY_GITHUB_REF}"
 
