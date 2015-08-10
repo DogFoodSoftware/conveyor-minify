@@ -2,15 +2,17 @@
 
 set -e
 
-MINIFY_GITHUB_REF="mrclay/minify"
-MINIFY_REV="db7fe244932ea77cf1438965693672ea12b33da8"
-MINIFY_SHA256="1a1567vpbjb8q71pxsr4kpnw1qvi9p7i61pky8mp4m27z4hh6h4r"
-
 CONVEYOR_PLAYGROUND="$HOME/playground"
 CONVEYOR_DATA="$HOME/data"
 
+MINIFY_GITHUB_REF="mrclay/minify"
+MINIFY_REV="db7fe244932ea77cf1438965693672ea12b33da8"
+MINIFY_SHA256="1a1567vpbjb8q71pxsr4kpnw1qvi9p7i61pky8mp4m27z4hh6h4r"
+MINIFY_APP_HOME="${CONVEYOR_DATA}/apps/DogFoodSoftware/minify"
+
 GITHUB_REF="DogFoodSoftware/conveyor-minify"
 CONVEYOR_MINIFY_REV="master"
+PROJECT_HOME="${CONVEYOR_PLAYGROUND}/${GITHUB_REF}"
 
 function usage() {
 
@@ -64,8 +66,6 @@ fi
 cd DogFoodSoftware
 git clone -o $MINIFY_REV --depth 1 https://github.com/${MINIFY_GITHUB_REF}.git minify
 
-MINIFY_APP_HOME="${CONVEYOR_DATA}/apps/${MINIFY_GITHUB_REF}"
-
 cd "$CONVEYOR_PLAYGROUND"
 # We checkout via HTTPS in case the 'ssh-agent' isn't available when
 # the script is run; such as when the script is run with an alternate
@@ -74,8 +74,6 @@ git clone -b $CONVEYOR_MINIFY_REV --depth 1 https://github.com/${GITHUB_REF}.git
 # But then swtich to SSH for easy updates for those with authorized keys.
 cd "$GITHUB_REF"
 git remote set-url origin git@github.com:${GITHUB_REF}.git
-
-PROJECT_HOME="${CONVEYOR_PLAYGROUND}/${GITHUB_REF}"
 
 for i in `ls ${PROJECT_HOME}/conf/service-*.nginx.conf`; do
     ln -s "$i" /etc/nginx/services
