@@ -48,7 +48,7 @@ shift
 # In case this is NOT a conveyor enviorment, we need to create some
 # dirs for this stuff to live in.
 for i in "$CONVEYOR_PLAYGROUND" \
-         "$CONVYEOR_DATA/apps"; do
+         "$CONVEYOR_DATA/apps"; do
     if [ ! -d "$i" ]; then
 	mkdir -p "$i"
     fi
