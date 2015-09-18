@@ -1,0 +1,3 @@
+<div class="p">
+  Conveyor-Minify is a thin wrapper around the excellent <a href="https://github.com/mrclay/minify">Minify</a> project. It replaces the `config` and `groupConfig` files and sets up routing for the `/minify` resource in a standard Conveyor setup.
+</div>
