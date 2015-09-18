@@ -2,7 +2,8 @@
 
 set -e
 
-CONVEYOR_PLAYGROUND="$HOME/playground"
+source /etc/environment
+
 CONVEYOR_DATA="$HOME/data"
 
 MINIFY_GITHUB_REF="mrclay/minify"
@@ -12,7 +13,7 @@ MINIFY_APP_HOME="${CONVEYOR_DATA}/apps/DogFoodSoftware/minify"
 
 GITHUB_REF="DogFoodSoftware/conveyor-minify"
 CONVEYOR_MINIFY_REV="master"
-PROJECT_HOME="${CONVEYOR_PLAYGROUND}/${GITHUB_REF}"
+PROJECT_HOME="${PLAYGROUND}/${GITHUB_REF}"
 
 function usage() {
 
@@ -27,22 +28,15 @@ function usage() {
     echo
     echo "--minify-rev|-m <git rev>"
     echo "  Overrides default minify version to checkout."
-    echo
-    echo "--playground|-p <dir>"
-    echo "  Specifies the location of playground."
-    echo
 }
 
-TMP=`getopt --name=$0 -a --longoptions=minify-rev,playground -o m,p -- $@`
+TMP=`getopt --name=$0 -a --longoptions=minify-rev -o m -- $@`
 eval set -- $TMP
 
 until [ $1 == -- ]; do
     case "$1" in
 	-m|--minify-rev)
 	    MINIFY_REV="$2"
-	    shift;;
-	-p|--playground)
-	    CONVEYOR_PLAYGROUND="$2"
 	    shift;;
     esac
     shift
@@ -51,7 +45,7 @@ shift
 
 # In case this is NOT a conveyor enviorment, we need to create some
 # dirs for this stuff to live in.
-for i in "$CONVEYOR_PLAYGROUND" \
+for i in "$PLAYGROUND" \
          "$CONVEYOR_DATA/apps"; do
     if [ ! -d "$i" ]; then
 	mkdir -p "$i"
@@ -66,7 +60,7 @@ fi
 cd DogFoodSoftware
 git clone -o $MINIFY_REV --depth 1 https://github.com/${MINIFY_GITHUB_REF}.git minify
 
-cd "$CONVEYOR_PLAYGROUND"
+cd "$PLAYGROUND"
 # We checkout via HTTPS in case the 'ssh-agent' isn't available when
 # the script is run; such as when the script is run with an alternate
 # user using 'sudo'.
@@ -94,3 +88,6 @@ for i in `ls "${PROJECT_HOME}/src"`; do
 done
 
 mkdir -p ${MINIFY_APP_HOME}/cache;
+
+con_doc_link $PROJECT_HOME/documentation /DogFoodSoftware.conveyor-minify
+ln -s $PLAYGROUND/DogFoodSoftware/conveyor-minify $DOCUMENTATION_HOME/DogFoodSoftware.conveyor-minify/src
