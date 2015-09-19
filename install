@@ -3,6 +3,7 @@
 set -e
 
 source /etc/environment
+source $CONVEYOR_CORE/src/lib/conveyor-libs.sh
 
 CONVEYOR_DATA="$HOME/data"
 
