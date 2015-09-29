@@ -8,7 +8,7 @@ source $CONVEYOR_CORE/src/lib/conveyor-libs.sh
 CONVEYOR_DATA="$HOME/data"
 
 MINIFY_GITHUB_REF="mrclay/minify"
-MINIFY_REV="db7fe244932ea77cf1438965693672ea12b33da8"
+MINIFY_REV="2.1.7"
 MINIFY_SHA256="1a1567vpbjb8q71pxsr4kpnw1qvi9p7i61pky8mp4m27z4hh6h4r"
 MINIFY_APP_HOME="${CONVEYOR_DATA}/apps/DogFoodSoftware/minify"
 
@@ -59,7 +59,7 @@ if [ ! -d DogFoodSoftware ]; then
     mkdir DogFoodSoftware
 fi
 cd DogFoodSoftware
-git clone -o $MINIFY_REV --depth 1 https://github.com/${MINIFY_GITHUB_REF}.git minify
+git clone --branch $MINIFY_REV --depth 1 https://github.com/${MINIFY_GITHUB_REF}.git minify
 
 cd "$PLAYGROUND"
 # We checkout via HTTPS in case the 'ssh-agent' isn't available when
